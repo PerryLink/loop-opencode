@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "progress": {
+    "phase": "init",
+    "cycle": 1,
+    "convergence_counter": 0,
+    "part1_round": 0,
+    "verification_pass_count": 0,
+    "repair_context": null,
+    "budget": {
+      "phase_budget": 0,
+      "phase_budget_consumed": 0,
+      "phase_budget_warning_issued": false,
+      "phase_budget_exhausted": false,
+      "phase_budget_exhaustion_count": 0,
+      "cycle_total_budget": 0,
+      "cycle_total_consumed": 0,
+      "estimated_tokens_this_session": 0,
+      "context_usage_pct": 0,
+      "budget_overrun_action": "warn"
+    },
+    "bubble_state": {
+      "bubble_id": "",
+      "split_index": 0,
+      "max_splits": 3,
+      "sub_phase_progress": {
+        "part_1_1": 0,
+        "part_1_2": 0,
+        "part_1_3": 0
+      },
+      "checkpoint_file": null,
+      "degraded": false,
+      "degraded_reason": null,
+      "assumptions_count": 0,
+      "quality_signals": {
+        "semantic_repetition_count": 0,
+        "contradiction_count": 0
+      }
+    },
+    "phase_transitions": [],
+    "retry_count_this_phase": 0
+  },
+  "config": {
+    "mode": "auto",
+    "tdd": false,
+    "skip_testing": false,
+    "max_cycles": 5,
+    "max_part1_rounds": 10,
+    "convergence_rounds": 2,
+    "route_repeat_max": 3,
+    "part1_timeout_minutes": 30,
+    "pending_confirmation_timeout_minutes": 30,
+    "user_request": "",
+    "auto_mode": true,
+    "impl_engine": "direct",
+    "version": "0.1.0"
+  },
+  "issues": {
+    "active": {
+      "p0": [],
+      "p1": [],
+      "p2": []
+    },
+    "all_time": {
+      "p0_total": 0,
+      "p1_total": 0,
+      "p2_total": 0
+    }
+  },
+  "routing_history": [],
+  "p0_history": [],
+  "phase_contracts": {},
+  "pending_confirmation": null,
+  "watchdog": {
+    "pid": null,
+    "running": false,
+    "last_heartbeat_at": null,
+    "last_marker_at": null,
+    "alerts": [],
+    "started_at": null
+  },
+  "termination": {
+    "status": "active",
+    "exit_reason": null,
+    "completed_at": null,
+    "paused_at": null,
+    "failed_at": null
+  },
+  "artifacts": {},
+  "created_at": "",
+  "updated_at": ""
+}

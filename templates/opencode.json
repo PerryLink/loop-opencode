@@ -1,0 +1,248 @@
+{
+  "$schema": "https://opencode.ai/config-schema.json",
+  "version": "1.0",
+  "description": "loop-opencode OpenCode 权限配置——8 个 tool.execute.before 安全闸门 + 工具白名单 + 文件访问规则",
+
+  "permissions": {
+    "allowed_tools": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash",
+      "Task",
+      "TaskOutput",
+      "EnterWorktree",
+      "NotebookEdit",
+      "WebSearch",
+      "WebFetch"
+    ],
+
+    "denied_tools": [
+      "Bash(git push *)",
+      "Bash(git merge *)",
+      "Bash(gh pr create *)",
+      "Bash(rm -rf /*)",
+      "Bash(curl * | sh)",
+      "Bash(wget * -O - | sh)",
+      "Bash(:(){ :|:& };:)"
+    ],
+
+    "command_permissions": {
+      "git": {
+        "allow": ["status", "diff", "log", "add", "commit", "branch", "checkout", "stash", "restore", "show", "blame", "ls-files", "rev-parse", "worktree list"],
+        "deny": ["push", "push --force", "merge", "rebase --onto", "reset --hard origin/*"]
+      },
+      "npm": {
+        "allow": ["install", "ci", "test", "run", "ls", "list", "outdated", "audit", "why", "version"],
+        "deny": ["publish", "unpublish", "deprecate", "owner"]
+      },
+      "bun": {
+        "allow": ["install", "add", "remove", "test", "run", "build", "lint", "format"],
+        "deny": ["publish"]
+      },
+      "gh": {
+        "deny": ["pr create", "pr merge", "release create", "repo delete"]
+      }
+    },
+
+    "file_permissions": {
+      "allow_read": [
+        ".loop-opencode/state.json",
+        ".loop-opencode/state.json.bak",
+        ".loop-opencode/gate_state.json",
+        ".loop-opencode/artifacts/**",
+        ".loop-opencode/runs.log",
+        "CLAUDE.md",
+        "src/**",
+        "tests/**",
+        "test/**",
+        "templates/**",
+        "plugin/**",
+        "*.ts",
+        "*.js",
+        "*.json",
+        "*.md",
+        "*.txt",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
+        "*.css",
+        "*.html",
+        "*.svg",
+        "*.csv",
+        "*.xml"
+      ],
+      "allow_write": [
+        ".loop-opencode/state.json",
+        ".loop-opencode/state.json.tmp",
+        ".loop-opencode/artifacts/**",
+        ".loop-opencode/runs.log",
+        "CLAUDE.md",
+        "src/**",
+        "tests/**",
+        "test/**",
+        "*.ts",
+        "*.js",
+        "*.json",
+        "*.md",
+        "*.txt",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
+        "*.css",
+        "*.html",
+        "*.svg",
+        "*.csv",
+        "*.xml",
+        "*.patch",
+        "*.diff"
+      ],
+      "deny_write": [
+        ".loop-opencode/gate_state.json",
+        ".loop-opencode/.lock",
+        ".loop-opencode/.gate_lock",
+        ".loop-opencode/.watchdog_heartbeat",
+        ".loop-opencode/.watchdog_marker",
+        ".loop-opencode/.watchdog_pid",
+        "opencode.json",
+        ".git/**",
+        ".claude/**",
+        "node_modules/**",
+        ".env",
+        ".env.*",
+        "*.key",
+        "*.pem",
+        "*.cert",
+        "*.p12",
+        "*.pfx",
+        "id_rsa*",
+        "id_ed25519*",
+        "id_ecdsa*"
+      ]
+    }
+  },
+
+  "plugins": {
+    "tool.execute.before": [
+      {
+        "id": "G1",
+        "name": "内容安全检查",
+        "path": "plugin/guard-g1.ts",
+        "description": "扫描 agent 输出内容中的恶意代码关键词（malware/exploit/backdoor/ransomware），阻止危险内容写入文件",
+        "matches": ["Write", "Edit"],
+        "priority": 100
+      },
+      {
+        "id": "G2",
+        "name": "方案确认闸门",
+        "path": "plugin/guard-g2.ts",
+        "description": "L1 安全模式/L1+ 协作模式下，在 part_1_3 完成后暂停等待用户确认方案。L2 自动通过",
+        "matches": ["Write"],
+        "priority": 200
+      },
+      {
+        "id": "G3",
+        "name": "依赖安装闸门",
+        "path": "plugin/guard-g3.ts",
+        "description": "拦截非默认源的 npm/bun/pip install 命令，要求用户确认",
+        "matches": ["Bash"],
+        "priority": 300
+      },
+      {
+        "id": "G4",
+        "name": "危险操作闸门",
+        "path": "plugin/guard-g4.ts",
+        "description": "五层匹配器：L0 灾难级全模式硬拦截 / L1 不可逆操作 safe+auto 拦截 / L2 高影响超阈值暂停 / L3 路径逃逸检测 / L4 路径保护",
+        "matches": ["Bash", "Write", "Edit"],
+        "priority": 400
+      },
+      {
+        "id": "G5",
+        "name": "文件变更闸门",
+        "path": "plugin/guard-g5.ts",
+        "description": "监控单次会话文件变更数量与范围，超阈值拦截。检测非 Task 清单内的文件修改",
+        "matches": ["Write", "Edit"],
+        "priority": 500
+      },
+      {
+        "id": "G6",
+        "name": "完成声明闸门",
+        "path": "plugin/guard-g6.ts",
+        "description": "验证 should_terminate() 终止条件：无活跃 P0/P1 + convergence_counter 达标 + verification_pass_count 满足",
+        "matches": ["Task", "TaskOutput"],
+        "priority": 600
+      },
+      {
+        "id": "gate_state_guard",
+        "name": "门禁文件写入保护",
+        "path": "plugin/gate-state-guard.ts",
+        "description": "拦截 agent 对 gate_state.json 的任何写入企图。此文件仅 plugin 和二进制可写",
+        "matches": ["Write", "Edit"],
+        "priority": 700
+      },
+      {
+        "id": "permission_block",
+        "name": "权限变更拦截",
+        "path": "plugin/guard-permission-block.ts",
+        "description": "阻止 agent 修改 opencode.json 权限配置、allowed_tools 白名单及 command_permissions",
+        "matches": ["Write", "Edit"],
+        "priority": 800
+      }
+    ],
+
+    "session.stop": [
+      {
+        "id": "G6-stop",
+        "name": "会话停止审计",
+        "path": "plugin/guard-g6.ts",
+        "description": "在 agent 会话停止前执行 G6 完成声明验证，输出审计摘要",
+        "matches": ["session.stop"]
+      }
+    ]
+  },
+
+  "hooks": {
+    "post_tool_use": [
+      {
+        "id": "post-hoc-audit",
+        "name": "事后审计",
+        "path": "plugin/guard-post-hoc.ts",
+        "description": "每轮 agent 完成后检测 merge commit、PR 创建、worktree 操作、非计划文件变更",
+        "matches": ["Bash", "Write", "Edit", "EnterWorktree"]
+      }
+    ]
+  },
+
+  "modes": {
+    "L1_safe": {
+      "description": "安全模式——全部 8 闸门激活，关键决策暂停确认",
+      "active_gates": ["G1", "G2", "G3", "G4", "G5", "G6", "gate_state_guard", "permission_block"],
+      "g2_auto_approve": false,
+      "g3_auto_approve": false,
+      "g4_level": "L1"
+    },
+    "L2_auto": {
+      "description": "标准模式（默认）——方案确认自动通过，危险操作超阈值暂停",
+      "active_gates": ["G1", "G2", "G3", "G4", "G5", "G6", "gate_state_guard", "permission_block"],
+      "g2_auto_approve": true,
+      "g3_auto_approve": false,
+      "g4_level": "L2"
+    },
+    "L3_unsafe": {
+      "description": "无限制模式——仅 L0 灾难级操作硬拦截",
+      "active_gates": ["G1", "G4", "G6"],
+      "g2_auto_approve": true,
+      "g3_auto_approve": true,
+      "g4_level": "L0"
+    },
+    "L1p_collaborative": {
+      "description": "协作模式——Part 1 决策点等待确认，Part 2 自动执行",
+      "active_gates": ["G1", "G2", "G3", "G4", "G5", "G6", "gate_state_guard", "permission_block"],
+      "g2_auto_approve": false,
+      "g3_auto_approve": false,
+      "g4_level": "L1"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "compilerOptions": {
+    /* 语言与环境 */
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+
+    /* Bun 类型支持 */
+    "types": ["bun-types"],
+
+    /* 严格模式——开启所有 TypeScript 严格检查 */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+
+    /* 输出控制 */
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    /* 解析与路径 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "rootDir": ".",
+    "outDir": "./dist",
+
+    /* 互操作 */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+
+    /* 源码映射与调试 */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* 高级 */
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+    "preserveConstEnums": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "plugin/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".loop-opencode"
+  ]
+}
