@@ -7,7 +7,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/Bun-%E2%89%A51.0-000000?logo=bun)](https://bun.sh/)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)]()
-[![CI](https://github.com/PerryLink/loop-opencode/actions/workflows/ci.yml/badge.svg)](https://github.com/PerryLink/loop-opencode/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 [**English**](#loop-opencode) | [**中文**](#中文)
