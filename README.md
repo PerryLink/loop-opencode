@@ -4,15 +4,15 @@
 
 > One-shot goal to production code — an 11-phase autonomous loop that designs, implements, tests, and verifies without human intervention.
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Bun](https://img.shields.io/badge/Bun-%3E%3D1.0-000000?logo=bun&logoColor=white)](https://bun.sh/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](./LICENSE)
-[![CI](https://img.shields.io/badge/CI-pending-lightgrey)](https://github.com/PerryLink/loop-opencode/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Bun](https://img.shields.io/badge/Bun-%E2%89%A51.0-000000?logo=bun)](https://bun.sh/)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)]()
+[![CI](https://github.com/PerryLink/loop-opencode/actions/workflows/ci.yml/badge.svg)](https://github.com/PerryLink/loop-opencode/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**LLMO Entity Definition**: This project is an **autonomous multi-phase coding loop** that **wraps OpenCode CLI with an 11-phase state machine, 8 safety gates, and convergence-driven routing**, optimized for **unattended design-to-delivery workflows** using **Bun-compiled TypeScript with in-process plugin architecture**.
+[**English**](#loop-opencode) | [**中文**](#中文)
 
-
-## ✨ Core Features
+## Features
 
 - **11-phase autonomous workflow** — brainstorming, plan, design, shell-op-preview, gate-check (G1-G2), implement, test, convergence-check, gate-check (G3-G6), verify, hard-done.
 - **8 safety gates (G1-G6 + Gate State Guard + Permission Block)** — content safety, plan confirmation, dependency sandbox, dangerous operation interception, file mutation audit, completion declaration, gate state integrity, privilege elevation block.
@@ -21,7 +21,7 @@
 - **State persistence** — `state.json` survives compaction and session restarts; resume any interrupted loop with the same `--goal`.
 - **Bun single-binary build** — zero runtime dependencies, cross-platform (Linux / macOS / Windows).
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Clone and install
@@ -30,7 +30,7 @@ cd loop-opencode
 bun install
 
 # Run directly
-bun run index.ts --goal "Build a CLI weather app in Python"
+bun run src/index.ts --goal "Build a CLI weather app in Python"
 
 # Or build a standalone binary
 bash bin/build.sh
@@ -39,7 +39,7 @@ bash bin/build.sh
 
 Requirements: **Bun >= 1.0**, OpenCode CLI installed and accessible in `PATH`.
 
-## 🙋 FAQ
+## FAQ
 
 ### Q: How is loop-opencode different from running OpenCode CLI directly?
 A: OpenCode CLI is a single-session interactive REPL. loop-opencode wraps it with an 11-phase state machine that automates the full design-implement-test-verify cycle. It auto-routes failures (P0/P1/P2), tracks convergence, enforces hard turn limits, and persists state across sessions — all without a human in the loop.
@@ -54,9 +54,9 @@ A: Yes. Every phase transition writes full state to `state.json`. If the process
 A: The convergence detector monitors the `convergence_counter`. If it exceeds the configured threshold without making forward progress, the loop triggers a forced re-route — escalating through P2 (retry), P1 (re-implement), and P0 (redesign) until the blockage resolves or the hard turn limit is hit.
 
 ### Q: Is this production-ready?
-A: The core engine (phase machine, gates, routing, persistence) is complete and battle-tested. Areas still maturing: CI pipeline (currently `bun test` only), OpenCode CLI plugin hook documentation, and system-level E2E test coverage. See the completeness section in the Chinese docs below.
+A: The core engine (phase machine, gates, routing, persistence) is complete and battle-tested. Areas still maturing: CI pipeline (currently `bun test` only), OpenCode CLI plugin hook documentation, and system-level E2E test coverage.
 
-## 🌐 Related Projects
+## Related Projects
 
 | Project | Description | Repo |
 |---------|------------|------|
@@ -72,11 +72,13 @@ A: The core engine (phase machine, gates, routing, persistence) is complete and 
 | loop-windsurf | Autonomous coding loop driver for Windsurf IDE | [PerryLink/loop-windsurf](https://github.com/PerryLink/loop-windsurf) |
 | loop-aider | Multi-phase ReAct loop wrapping Aider CLI | [PerryLink/loop-aider](https://github.com/PerryLink/loop-aider) |
 
-## 📄 License
+## License
 
 Apache License 2.0 © 2026 Perry Link. See [LICENSE](./LICENSE) for full text.
 
 ---
+
+<a id="中文"></a>
 
 ## 中文说明
 
@@ -97,23 +99,7 @@ Apache License 2.0 © 2026 Perry Link. See [LICENSE](./LICENSE) for full text.
 git clone https://github.com/PerryLink/loop-opencode.git
 cd loop-opencode
 bun install
-bun run index.ts --goal "用 Python 写一个命令行天气应用"
+bun run src/index.ts --goal "用 Python 写一个命令行天气应用"
 ```
 
 环境要求：**Bun >= 1.0**，系统中已安装 OpenCode CLI 并位于 `PATH`。
-
-### 三层架构
-
-| 层级 | 文件 | 职责 |
-|-----|------|-----|
-| 战略层 | `AGENTS.md` | 定义 11 阶段工作流、各阶段 prompt 模板、P0/P1/P2 路由规则 |
-| 配置层 | `opencode.json` | OpenCode CLI 插件配置、钩子生命周期绑定、权限策略 |
-| 状态层 | `state.json` | 运行时状态持久化、收敛计数器、闸门状态、阶段进度 |
-
-### 完成度声明
-
-当前完成度：**82%**
-
-已完成模块：11 阶段状态机编排、8 安全闸门（G1-G6 + Gate State Guard + Permission Block）、收敛检测引擎（fast-path 提前终止）、P0/P1/P2 路由引擎、单二进制 Bun 编译构建（Linux / macOS / Windows）、状态持久化与崩溃恢复。
-
-待完善：CI 流水线尚未建立（当前仅有 `bun test` 本地验证）；OpenCode CLI in-process 插件接口文档不完整，需补充详细钩子生命周期说明；缺乏系统级 E2E 测试覆盖。
